@@ -1,0 +1,8 @@
+## FRONT
+front/.nuxt/
+front/node_modules/
+
+
+## BACK
+go.*
+.idea
