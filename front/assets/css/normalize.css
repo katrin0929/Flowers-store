@@ -1,0 +1,259 @@
+blockquote,
+dl,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+figure,
+p,
+pre {
+ margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+ font-weight: inherit;
+ font-size: inherit;
+}
+
+ol,
+ul {
+ margin: 0;
+ padding: 0;
+
+ list-style: none;
+}
+
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+ display: block;
+
+ vertical-align: middle;
+}
+
+*,
+*::before,
+*::after {
+ box-sizing: border-box;
+
+ border-color: currentcolor;
+ border-style: solid;
+ border-width: 0;
+}
+
+*,
+::after,
+::before {
+ box-sizing: border-box;
+
+ border: 0 solid;
+}
+
+html {
+ /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+ text-size-adjust: 100%;
+ font-feature-settings: normal;
+
+ line-height: 1.5;
+ tab-size: 4;
+}
+
+body {
+ margin: 0;
+
+ line-height: inherit;
+}
+
+hr {
+ height: 0;
+
+ color: inherit;
+
+ border-top-width: 1px;
+}
+
+abbr:where([title]) {
+ text-decoration: none;
+
+ border-bottom: 1px dotted;
+}
+
+a {
+ color: inherit;
+ text-decoration: inherit;
+}
+
+b,
+strong {
+ font-weight: bolder;
+}
+
+small {
+ font-size: 80%;
+}
+
+sub,
+sup {
+ position: relative;
+
+ font-size: 75%;
+ line-height: 0;
+ vertical-align: initial;
+}
+
+sub {
+ bottom: -0.25em;
+}
+
+sup {
+ top: -0.5em;
+}
+
+table {
+ border-color: inherit;
+ border-collapse: collapse;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+ margin: 0;
+ padding: 0;
+
+ color: inherit;
+ font-weight: inherit;
+ font-size: 100%;
+ font-family: inherit;
+ line-height: inherit;
+}
+
+button,
+select {
+ text-transform: none;
+}
+
+[type="button"],
+[type="reset"],
+[type="submit"],
+button {
+ background-color: initial;
+ background-image: none;
+
+ appearance: button;
+}
+
+:-moz-focusring {
+ outline: auto;
+}
+
+:-moz-ui-invalid {
+ box-shadow: none;
+}
+
+progress {
+ vertical-align: initial;
+}
+
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+ height: auto;
+}
+
+[type="search"] {
+ outline-offset: -2px;
+
+ appearance: textfield;
+}
+
+::-webkit-search-decoration {
+ appearance: none;
+}
+
+::-webkit-file-upload-button {
+ font: inherit;
+
+ appearance: button;
+}
+
+summary {
+ display: list-item;
+}
+
+blockquote,
+dd,
+dl,
+figure,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+p,
+pre {
+ margin: 0;
+}
+
+fieldset {
+ margin: 0;
+}
+
+fieldset,
+legend {
+ padding: 0;
+}
+
+menu,
+ol,
+ul {
+ margin: 0;
+ padding: 0;
+
+ list-style: none;
+}
+
+textarea {
+ resize: vertical;
+}
+
+input::placeholder,
+textarea::placeholder {
+ color: #9ca3af;
+
+ opacity: 1;
+}
+
+[role="button"],
+button {
+ cursor: pointer;
+}
+
+:disabled {
+ cursor: default;
+}
+
+img,
+video {
+ max-width: 100%;
+ height: auto;
+}
+
+[hidden] {
+ display: none;
+}

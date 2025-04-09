@@ -1,0 +1,9 @@
+@font-face {
+    font-weight: 400;
+    font-family: 'Roboto';
+    font-style: normal;
+    src:
+     url('../../public/fonts/Roboto-Variable.ttf') format('truetype');
+    text-rendering: optimizelegibility;
+    font-display: swap;
+   }
