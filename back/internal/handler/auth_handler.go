@@ -17,6 +17,11 @@ func NewAuthHandler(authSvc *service.AuthService) *AuthHandler {
 }
 
 func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Content-Type", "application/json")
+
 	var creds struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
