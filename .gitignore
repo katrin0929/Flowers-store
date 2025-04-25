@@ -7,3 +7,4 @@ front/node_modules/
 .idea
 back/go.mod
 back/go.sum
+back/data/*
