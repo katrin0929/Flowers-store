@@ -1,6 +1,6 @@
 FROM postgres:latest
 
-ENV POSTGRES_DB=my_database
+ENV POSTGRES_DB=postgres
 ENV POSTGRES_USER=user
 ENV POSTGRES_PASSWORD=password
 
