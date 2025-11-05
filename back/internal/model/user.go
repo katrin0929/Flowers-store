@@ -1,7 +1,19 @@
 package model
 
+import "gorm.io/gorm"
+
 type User struct {
-	ID       int    `json:"id"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	gorm.Model
+	Email        string `gorm:"unique;not null"`
+	PasswordHash string `gorm:"not null"`
+}
+
+type RegisterRequest struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=8"`
+}
+
+type LoginRequest struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=8"`
 }

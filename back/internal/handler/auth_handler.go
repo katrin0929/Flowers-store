@@ -1,50 +1,53 @@
 package handler
 
 import (
-	"Flowers-store/internal/service"
-	"encoding/json"
+	"github.com/gin-gonic/gin"
+	"github.com/katrin0929/Flowers-store/back/internal/model"
+	"github.com/katrin0929/Flowers-store/back/internal/service"
 	"net/http"
 )
 
 type AuthHandler struct {
-	authSvc *service.AuthService
+	authService service.AuthService
 }
 
-func NewAuthHandler(authSvc *service.AuthService) *AuthHandler {
-	return &AuthHandler{
-		authSvc: authSvc,
-	}
+func NewAuthHandler(authService service.AuthService) *AuthHandler {
+	return &AuthHandler{authService: authService}
 }
 
-func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
-	w.Header().Set("Access-Control-Allow-Headers", "*")
-	w.Header().Set("Content-Type", "application/json")
-
-	var creds struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-
-	err := json.NewDecoder(r.Body).Decode(&creds)
-	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+func (h *AuthHandler) Register(c *gin.Context) {
+	var req model.RegisterRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if h.authSvc.Login(creds.Username, creds.Password) {
-		w.WriteHeader(http.StatusOK)
-		err := json.NewEncoder(w).Encode(map[string]string{"message": "Logged in successfully"})
-
-		if err != nil {
-			return
-		}
-	} else {
-		w.WriteHeader(http.StatusUnauthorized)
-		err := json.NewEncoder(w).Encode(map[string]string{"message": "Authentication failed"})
-		if err != nil {
-			return
-		}
+	user := model.User{
+		Email:        req.Email,
+		PasswordHash: req.Password,
 	}
+
+	if err := h.authService.Register(user); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully"})
+}
+
+func (h *AuthHandler) Login(c *gin.Context) {
+	var req model.LoginRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := h.authService.Login(req.Email, req.Password)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	// В реальном проекте здесь должна быть генерация JWT токена
+	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "user": user})
 }

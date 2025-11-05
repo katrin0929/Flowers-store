@@ -1,7 +1,14 @@
-FROM postgres:latest
+# Сборка
+FROM golang:1.24-alpine AS builder
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -o /app/main ./cmd/main.go
 
-ENV POSTGRES_DB=postgres
-ENV POSTGRES_USER=user
-ENV POSTGRES_PASSWORD=password
-
-EXPOSE 5432
+# Запуск
+FROM alpine:latest
+WORKDIR /app
+COPY --from=builder /app/main .
+COPY --from=builder /app/.env .
+CMD ["./main"]

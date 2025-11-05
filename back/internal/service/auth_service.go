@@ -1,24 +1,42 @@
 package service
 
 import (
-	"Flowers-store/internal/repository"
+	"github.com/katrin0929/Flowers-store/back/internal/model"
+	"github.com/katrin0929/Flowers-store/back/internal/repository"
+	"golang.org/x/crypto/bcrypt"
 )
 
-type AuthService struct {
-	repo repository.Repository
+type AuthService interface {
+	Register(user model.User) error
+	Login(email, password string) (*model.User, error)
 }
 
-func NewAuthService(repo repository.Repository) *AuthService {
-	return &AuthService{
-		repo: repo,
-	}
+type authService struct {
+	userRepo repository.UserRepository
 }
 
-func (a *AuthService) Login(username, password string) bool {
-	user, err := a.repo.GetByUsername(username)
-	if err != nil || user == nil {
-		return false
+func NewAuthService(userRepo repository.UserRepository) AuthService {
+	return &authService{userRepo: userRepo}
+}
+
+func (s *authService) Register(user model.User) error {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.PasswordHash), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	user.PasswordHash = string(hashedPassword)
+	return s.userRepo.Create(&user)
+}
+
+func (s *authService) Login(email, password string) (*model.User, error) {
+	user, err := s.userRepo.FindByEmail(email)
+	if err != nil {
+		return nil, err
 	}
 
-	return user.Password == password
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }

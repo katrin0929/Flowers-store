@@ -1,39 +1,42 @@
 package main
 
 import (
-	"Flowers-store/internal/handler"
-	"Flowers-store/internal/repository"
-	"Flowers-store/internal/service"
-	"Flowers-store/pkg/database"
+	"github.com/gin-gonic/gin"
+	"github.com/katrin0929/Flowers-store/back/internal/handler"
+	"github.com/katrin0929/Flowers-store/back/internal/model"
+	"github.com/katrin0929/Flowers-store/back/internal/repository"
+	"github.com/katrin0929/Flowers-store/back/internal/service"
+	"github.com/katrin0929/Flowers-store/back/pkg/database"
 	"log"
-	"net/http"
-
-	"github.com/gorilla/mux"
 )
 
 func main() {
-	db, err := database.NewDB()
-
+	// Инициализация БД одной строкой
+	db, err := database.InitDB()
 	if err != nil {
-		log.Fatalf("Failed to connect to the database: %v", err)
+		log.Fatal("Failed to init DB:", err)
 	}
 
-	defer db.Close()
-
-	repo := repository.NewPostgresRepository(db)
-	authSvc := service.NewAuthService(repo)
-	regSvc := service.NewRegistrationService(repo)
-
-	router := mux.NewRouter()
-
-	router.HandleFunc("/auth", handler.NewAuthHandler(authSvc).HandleLogin).Methods("POST")
-	router.HandleFunc("/register", handler.NewRegistrationHandler(regSvc).HandleRegister).Methods("POST")
-
-	server := &http.Server{
-		Addr:    ":8080",
-		Handler: router,
+	// Автомиграция
+	if err := db.AutoMigrate(&model.User{}); err != nil {
+		log.Fatal("Migration failed:", err)
 	}
 
-	log.Println("Server is running at localhost:8080")
-	log.Fatal(server.ListenAndServe())
+	// Инициализация зависимостей
+	authHandler := handler.NewAuthHandler(
+		service.NewAuthService(
+			repository.NewUserRepository(db),
+		),
+	)
+
+	// Запуск сервера
+	router := gin.Default()
+	router.POST("/register", authHandler.Register)
+	router.POST("/login", authHandler.Login)
+
+	//port := database.GetEnv("APP_PORT", "8080")
+	log.Printf("Server running on :%s", "8080")
+	if err := router.Run(":" + "8080"); err != nil {
+		log.Fatal("Server failed:", err)
+	}
 }

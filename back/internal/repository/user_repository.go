@@ -1,40 +1,31 @@
 package repository
 
 import (
-	"Flowers-store/internal/model"
-	"database/sql"
-	"errors"
+	"github.com/katrin0929/Flowers-store/back/internal/model"
+	"gorm.io/gorm"
 )
 
-// Repository реализует интерфейс для хранения данных
-type Repository interface {
+type UserRepository interface {
 	Create(user *model.User) error
-	GetByUsername(username string) (*model.User, error)
+	FindByEmail(email string) (*model.User, error)
 }
 
-type postgresRepository struct {
-	db *sql.DB
+type userRepository struct {
+	db *gorm.DB
 }
 
-func NewPostgresRepository(db *sql.DB) Repository {
-	return &postgresRepository{
-		db: db,
+func NewUserRepository(db *gorm.DB) UserRepository {
+	return &userRepository{db: db}
+}
+
+func (r *userRepository) Create(user *model.User) error {
+	return r.db.Create(user).Error
+}
+
+func (r *userRepository) FindByEmail(email string) (*model.User, error) {
+	var user model.User
+	if err := r.db.Where("email = ?", email).First(&user).Error; err != nil {
+		return nil, err
 	}
-}
-
-func (p *postgresRepository) Create(user *model.User) error {
-	query := `INSERT INTO users (username, password) VALUES ($1, $2)`
-	_, err := p.db.Exec(query, user.Username, user.Password)
-	return err
-}
-
-func (p *postgresRepository) GetByUsername(username string) (*model.User, error) {
-	var u model.User
-	row := p.db.QueryRow(`SELECT id, username, password FROM users WHERE username=$1`,
-		username)
-	err := row.Scan(&u.ID, &u.Username, &u.Password)
-	if err != nil && errors.Is(err, sql.ErrNoRows) {
-		return nil, nil // Пользователь не найден
-	}
-	return &u, err
+	return &user, nil
 }

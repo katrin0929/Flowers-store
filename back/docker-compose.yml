@@ -1,14 +1,49 @@
-version: '3'
+#services:
+#  postgres: # Контейнер с PostgreSQL
+#    image: postgres:15
+#    environment:
+#      POSTGRES_USER: user
+#      POSTGRES_PASSWORD: password
+#      POSTGRES_DB: flowers_store
+#    ports:
+#      - "5432:5432"
+#
+#  app: # Контейнер с вашим Go-приложением
+#    build: .  # Собирает образ из Dockerfile
+#    ports:
+#      - "8080:8080"  # Пробрасывает порт наружу
+#    depends_on:
+#      - postgres  # Ждёт запуска PostgreSQL
+
 
 services:
   postgres:
-    build: .
-    container_name: postgres
-    ports:
-      - "5432:5432"
+    image: postgres:15-alpine
+    env_file: .env  # Подгружаем переменные
     volumes:
-      - ./data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
+      - postgres_data:/var/lib/postgresql/data  # Для сохранения данных
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  app:
+    ports:
+      - "8080:8080"
+    build: .
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
